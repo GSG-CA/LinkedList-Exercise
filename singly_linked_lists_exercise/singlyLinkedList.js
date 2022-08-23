@@ -1,182 +1,159 @@
-function Node(val) {
-  this.val = val;
-  this.next = null;
-}
-
-function SinglyLinkedList(array = []) {
-  this.head = null;
-  this.tail = null;
-  this.length = 0;
-
-  if (Array.isArray(array)) {
-    array.forEach((el) => {
-      this.push(el);
-    });
+class Node {
+  constructor(val) {
+    this.val = val;
+    this.next = null;
   }
 }
 
-SinglyLinkedList.prototype.push = function (val) {
-  let newNode = new Node(val);
+class SinglyLinkedList {
+  constructor(array = []) {
+    this.head = null;
+    this.tail = null;
+    this.length = 0;
 
-  if (this.head === null) {
-    this.head = newNode;
-    this.tail = this.head;
-  } else {
-    this.tail.next = newNode;
-    this.tail = newNode;
-  }
-
-  this.length++;
-
-  return this;
-};
-
-SinglyLinkedList.prototype.unshift = function (val) {
-  let newNode = new Node(val);
-
-  if (this.head === null) {
-    this.head = newNode;
-    this.tail = this.head;
-  } else {
-    newNode.next = this.head;
-    this.head = newNode;
-  }
-
-  this.length++;
-
-  return this;
-};
-
-SinglyLinkedList.prototype.insert = function (index, val) {
-  if (index < 0 || index >= this.length) {
-    return undefined;
-  }
-
-  let newNode = new Node(val);
-
-  let currentNode = this.head;
-  let counter = 0;
-  while (currentNode) {
-    if (counter === index - 1) {
-      break;
+    if (Array.isArray(array)) {
+      array.forEach((ele) => {
+        this.push(ele);
+      });
     }
-    counter++;
-    currentNode = currentNode.next;
   }
 
-  newNode.next = currentNode.next;
-  currentNode.next = newNode;
+  push(val) {
+    let newNode = new Node(val);
 
-  this.length++;
-
-  return this.length;
-};
-
-SinglyLinkedList.prototype.getNode = function (index) {
-  if (index < 0 || index >= this.length) {
-    return undefined;
-  }
-
-  let currentNode = this.head;
-  let counter = 0;
-  while (currentNode) {
-    if (counter === index) {
-      break;
+    if (this.length === 0) {
+      this.head = newNode;
+      this.tail = newNode;
+    } else {
+      this.tail.next = newNode;
+      this.tail = newNode;
     }
-    counter++;
-    currentNode = currentNode.next;
+
+    this.length++;
+
+    return this;
   }
 
-  return currentNode;
-};
+  unshift(val) {
+    const newNode = new Node(val);
 
-SinglyLinkedList.prototype.get = function (index) {
-  let node = this.getNode(index);
+    if (this.length === 0) {
+      this.head = newNode;
+      this.tail = newNode;
+    } else {
+      newNode.next = this.head;
+      this.head = newNode;
+    }
 
-  return node ? node.val : null;
-};
+    this.length++;
 
-SinglyLinkedList.prototype.set = function (index, val) {
-  let node = this.getNode(index);
-
-  if (node) {
-    node.val = val;
-    return true;
+    return this;
   }
 
-  return false;
-};
+  insert(index, val) {
+    if (index < 0 || index >= this.length) {
+      return undefined;
+    }
 
-SinglyLinkedList.prototype.shift = function () {
-  if (!this.head) {
-    return undefined;
+    let newNode = new Node(val);
+
+    let current = this.getNode(index - 1);
+
+    newNode.next = current.next;
+    current.next = newNode;
+
+    return ++this.length;
   }
 
-  let temp = this.head;
-  this.head = this.head.next;
-  temp.next = null;
+  getNode(index) {
+    if (index < 0 || index >= this.length) {
+      return undefined;
+    }
 
-  this.length--;
-
-  return temp.val;
-};
-
-SinglyLinkedList.prototype.remove = function (index) {
-  if (index < 0 || index >= this.length) {
-    return undefined;
+    let current = this.head;
+    let counter = 0;
+    while (current) {
+      if (counter === index) {
+        return current;
+      }
+      counter++;
+      current = current.next;
+    }
   }
 
-  let removedNode = null;
+  get(index) {
+    const node = this.getNode(index);
 
-  if (this.length === 1) {
-    removedNode = this.shift();
-  } else {
-    let previousNode = this.getNode(index - 1);
-    removedNode = previousNode.next;
-    previousNode.next = previousNode.next.next;
-    removedNode.next = null;
+    return node ? node.val : null;
   }
 
-  this.length--;
+  set(index, newVal) {
+    const node = this.getNode(index);
 
-  return removedNode;
-};
+    if (node) {
+      node.val = newVal;
+      return true;
+    }
 
-SinglyLinkedList.prototype.pop = function () {
-  if (!this.tail) {
-    return undefined;
+    return false;
   }
 
-  let previousNode = this.getNode(this.length - 2);
+  shift() {
+    if (this.length <= 0) {
+      return undefined;
+    }
 
-  let deletedNode = previousNode.next;
-  previousNode.next = deletedNode.next;
-  deletedNode.next = null;
+    let deleted = this.head;
 
-  this.tail = previousNode;
+    if (this.length === 1) {
+      this.head = null;
+      this.tail = null;
+    } else {
+      let temp = this.head;
+      this.head = this.head.next;
+      temp.next = null;
+    }
 
-  this.length--;
-  return deletedNode.val;
-};
+    this.length--;
 
-SinglyLinkedList.prototype.reverse = function () {
-  let node = this.head;
-  let previousNode = null;
-
-  this.tail = this.head;
-
-  while (node) {
-    let tempNode = node.next;
-
-    node.next = previousNode;
-
-    previousNode = node;
-
-    node = tempNode;
+    return deleted ? deleted.val : null;
   }
 
-  this.head = previousNode;
-};
+  pop() {
+    let node = this.getNode(this.length - 2);
 
+    if (!node) {
+      return undefined;
+    }
+
+    let deleted = this.tail;
+
+    node.next = null;
+    this.tail = node;
+
+    this.length--;
+
+    return deleted.val;
+  }
+
+  remove(index) {
+    let node = this.getNode(index - 1);
+
+    if (!node) return undefined;
+
+    let temp = node.next;
+    node.next = node.next.next;
+    temp.next = null;
+
+    this.length--;
+
+    return temp;
+  }
+}
+
+const arr = [1, 3, 4, 5, 6];
+const list = new SinglyLinkedList(arr);
+list.unshift(10);
+console.log(list);
 
 module.exports = SinglyLinkedList;
